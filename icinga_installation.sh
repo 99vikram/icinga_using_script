@@ -1,14 +1,18 @@
 #!/bin/sh
 sudo apt-get update -y
 sudo apt-get install apache2 php7.0 libapache2-mod-php7.0 php7.0-gd php7.0-intl php7.0-xml php7.0-ldap php7.0-mysql php7.0-pgsql php-imagick zip unzip icingaweb2 icingaweb2-module-monitoring icingaweb2-module-doc icingacli mariadb-client mariadb-server  -y
-sudo sed -i "s/Options Indexes FollowSymLinks/Options FollowSymLinks/" /etc/apache2/apache2.conf
 wget -O - http://packages.icinga.org/icinga.key | sudo apt-key add -
 sudo add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-xenial main'
 sudo apt-get update
+sudo systemctl start apache2.service
+sudo systemctl enable apache2.service
+sudo systemctl start mysql.service
+sudo systemctl enable mysql.service
+
 sudo apt-get install icinga2 nagios-plugins -y
 sudo systemctl start icinga2.service
 sudo systemctl enable icinga2.service
-sudo apt-get install icinga2-ido-mysql
+sudo apt-get install icinga2-ido-mysql -y
 
 sudo groupadd icingacmd
 sudo usermod -a -G icingacmd www-data
@@ -19,10 +23,7 @@ sudo systemctl restart apache2.service
 sudo icinga2 feature enable ido-mysql
 sudo systemctl restart icinga2.service
 
-sudo systemctl start apache2.service
-sudo systemctl enable apache2.service
-sudo systemctl start mysql.service
-sudo systemctl enable mysql.service
+sudo sed -i "s/Options Indexes FollowSymLinks/Options FollowSymLinks/" /etc/apache2/apache2.conf
 
 sudo ufw app list
 sudo ufw allow OpenSSH
