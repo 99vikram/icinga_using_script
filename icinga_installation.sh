@@ -57,7 +57,7 @@ sudo systemctl restart apache2.service
 #host = "localhost"
 #database = "icinga"
 
-sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;EXIT;"
+sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;"
 
 mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
 sudo icingacli setup token create
