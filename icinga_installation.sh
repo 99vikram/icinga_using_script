@@ -1,6 +1,7 @@
 #!/bin/sh
 sudo apt-get update -y
 sudo apt-get install apache2 php7.0 libapache2-mod-php7.0 php7.0-gd php7.0-intl php7.0-xml php7.0-ldap php7.0-mysql php7.0-pgsql php-imagick zip unzip icingaweb2 icingaweb2-module-monitoring icingaweb2-module-doc icingacli mariadb-client mariadb-server  -y
+sudo apt-get -f install
 wget -O - http://packages.icinga.org/icinga.key | sudo apt-key add -
 sudo add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-xenial main'
 sudo apt-get update
