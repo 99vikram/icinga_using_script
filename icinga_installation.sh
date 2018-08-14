@@ -56,6 +56,28 @@ sudo vi /etc/icinga2/features-available/ido-mysql.conf
 
 sudo systemctl restart icinga2.service
 sudo systemctl restart apache2.service
+
+sudo apt-get install make rrdtool librrds-perl g++ -y
+cd /tmp
+wget http://downloads.sourceforge.net/project/pnp4nagios/PNP-0.6/pnp4nagios-0.6.26.tar.gz
+tar -zxf pnp4nagios-0.6.26.tar.gz
+cd pnp4nagios-0.6.26/
+./configure --with-nagios-user=naemon --with-nagios-group=naemon
+useradd naemon
+groupadd naemon
+usermod -a -G naemon naemon
+
+make all
+make install
+make install-webconf
+make install-config
+make install-init
+
+update-rc.d npcd defaults
+service npcd start
+
+
+
 #sudo vi /etc/icinga2/features-available/ido-mysql.conf
 #user = "icinga"
 #password = "icinga"
