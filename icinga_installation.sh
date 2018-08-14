@@ -61,4 +61,4 @@ sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;"
 
 mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
 sudo icingacli setup token create
-
+sudo vi /etc/icinga2/features-available/ido-mysql.conf
