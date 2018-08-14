@@ -40,8 +40,9 @@ sudo /usr/bin/mysql_secure_installation
 #Disallow root login remotely? [Y/n]: Y
 #Remove test database and access to it? [Y/n]: Y
 #Reload privilege tables now? [Y/n]: Y
-sudo mysql -u root -p root -e "UPDATE mysql.user SET authentication_string=PASSWORD('root'), plugin='mysql_native_password' WHERE user='root';FLUSH PRIVILEGES;"
-sudo mysql -u root -p root -e "CREATE DATABASE icinga;
+pass="root"
+sudo mysql -u root -p${pass} -e "UPDATE mysql.user SET authentication_string=PASSWORD('root'), plugin='mysql_native_password' WHERE user='root';FLUSH PRIVILEGES;"
+sudo mysql -u root -p${pass} -e "CREATE DATABASE icinga;
 GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE VIEW, INDEX, EXECUTE ON icinga.* TO 'icinga'@'localhost' IDENTIFIED BY 'icinga';
 FLUSH PRIVILEGES;"
 
