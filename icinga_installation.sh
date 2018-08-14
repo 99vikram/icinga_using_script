@@ -46,7 +46,7 @@ sudo mysql -u root -p${pass} -e "CREATE DATABASE icinga;
 GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE VIEW, INDEX, EXECUTE ON icinga.* TO 'icinga'@'localhost' IDENTIFIED BY 'icinga';
 FLUSH PRIVILEGES;"
 
-sudo mysql -u root -p icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql
+sudo mysql -u root -p${pass} icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql
 
 sudo echo "date.timezone = America/Los_Angeles" >>  /etc/php/7.0/apache2/php.ini
 sudo systemctl restart apache2.service
@@ -57,11 +57,8 @@ sudo systemctl restart apache2.service
 #host = "localhost"
 #database = "icinga"
 
-sudo mysql -u root -p
+sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;EXIT;"
 
-CREATE DATABASE icingaweb2;
-EXIT;
-
-mysql -u root -p icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
+mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
 sudo icingacli setup token create
 
