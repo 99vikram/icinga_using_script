@@ -40,21 +40,15 @@ sudo /usr/bin/mysql_secure_installation
 #Disallow root login remotely? [Y/n]: Y
 #Remove test database and access to it? [Y/n]: Y
 #Reload privilege tables now? [Y/n]: Y
-sudo mysql -u root -p
-
-UPDATE mysql.user SET authentication_string=PASSWORD('root'), plugin='mysql_native_password' WHERE user='root';
-FLUSH PRIVILEGES;
-EXIT;
-sudo echo "date.timezone = America/Los_Angeles" >>  /etc/php/7.0/apache2/php.ini
-sudo systemctl restart apache2.service
-
-sudo mysql -u root -p
-CREATE DATABASE icinga;
+sudo mysql -u root -p root -e "UPDATE mysql.user SET authentication_string=PASSWORD('root'), plugin='mysql_native_password' WHERE user='root';FLUSH PRIVILEGES;"
+sudo mysql -u root -p root -e "CREATE DATABASE icinga;
 GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE VIEW, INDEX, EXECUTE ON icinga.* TO 'icinga'@'localhost' IDENTIFIED BY 'icinga';
-FLUSH PRIVILEGES;
-EXIT;
+FLUSH PRIVILEGES;"
 
 sudo mysql -u root -p icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql
+
+sudo echo "date.timezone = America/Los_Angeles" >>  /etc/php/7.0/apache2/php.ini
+sudo systemctl restart apache2.service
 
 #sudo vi /etc/icinga2/features-available/ido-mysql.conf
 #user = "icinga"
