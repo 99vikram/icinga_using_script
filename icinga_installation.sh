@@ -42,23 +42,21 @@ sudo /usr/bin/mysql_secure_installation
 #Reload privilege tables now? [Y/n]: Y
 pass="root"
 sudo mysql -u root -p${pass} -e "UPDATE mysql.user SET authentication_string=PASSWORD('root'), plugin='mysql_native_password' WHERE user='root';FLUSH PRIVILEGES;"
-sudo mysql -u root -p${pass} -e "CREATE DATABASE icinga;
-GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE VIEW, INDEX, EXECUTE ON icinga.* TO 'icinga'@'localhost' IDENTIFIED BY 'icinga';
-FLUSH PRIVILEGES;"
-
+sudo mysql -u root -p${pass} -e "CREATE DATABASE icinga;GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE VIEW, INDEX, EXECUTE ON icinga.* TO 'icinga'@'localhost' IDENTIFIED BY 'icinga';FLUSH PRIVILEGES;"
 sudo mysql -u root -p${pass} icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql
+sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;"
+mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
 
 sudo echo "date.timezone = America/Los_Angeles" >>  /etc/php/7.0/apache2/php.ini
 sudo systemctl restart apache2.service
 
+sudo icingacli setup token create
+sudo vi /etc/icinga2/features-available/ido-mysql.conf
+
+sudo systemctl restart icinga2.service
+sudo systemctl restart apache2.service
 #sudo vi /etc/icinga2/features-available/ido-mysql.conf
 #user = "icinga"
 #password = "icinga"
 #host = "localhost"
 #database = "icinga"
-
-sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;"
-
-mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
-sudo icingacli setup token create
-sudo vi /etc/icinga2/features-available/ido-mysql.conf
