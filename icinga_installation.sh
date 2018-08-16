@@ -95,6 +95,7 @@ apply Service "procs" {
   assign where host.vars.client_endpoint
 }" > /etc/icinga2/zones.d/master/services.conf
 
+sudo icinga2 daemon --validate
 sudo icingacli setup token create
 
 #sudo vi /etc/icinga2/features-available/ido-mysql.conf
