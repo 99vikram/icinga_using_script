@@ -51,7 +51,6 @@ mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.sche
 sudo echo "date.timezone = America/Los_Angeles" >>  /etc/php/7.0/apache2/php.ini
 sudo systemctl restart apache2.service
 
-sudo icingacli setup token create
 sudo vi /etc/icinga2/features-available/ido-mysql.conf
 
 sudo systemctl restart icinga2.service
@@ -77,6 +76,26 @@ update-rc.d npcd defaults
 service npcd start
 
 icinga2 node wizard
+sudo systemctl restart icinga2
+sudo mkdir /etc/icinga2/zones.d/master/
+cp /etc/icinga2/conf.d/templates.conf /etc/icinga2/zones.d/master/
+cp /etc/icinga2/conf.d/commands.conf /etc/icinga2/zones.d/master/
+touch /etc/icinga2/zones.d/master/services.conf
+echo "apply Service "load" {
+  import "generic-service"
+  check_command = "load"
+  command_endpoint = host.vars.client_endpoint
+  assign where host.vars.client_endpoint
+}
+
+apply Service "procs" {
+  import "generic-service"
+  check_command = "procs"
+  command_endpoint = host.vars.client_endpoint
+  assign where host.vars.client_endpoint
+}" > /etc/icinga2/zones.d/master/services.conf
+
+sudo icingacli setup token create
 
 #sudo vi /etc/icinga2/features-available/ido-mysql.conf
 #user = "icinga"
