@@ -76,7 +76,7 @@ make install-init
 update-rc.d npcd defaults
 service npcd start
 
-
+icinga2 node wizard
 
 #sudo vi /etc/icinga2/features-available/ido-mysql.conf
 #user = "icinga"
