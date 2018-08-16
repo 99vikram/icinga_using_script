@@ -1,0 +1,4 @@
+wget -O - http://packages.icinga.org/icinga.key | sudo apt-key add -
+add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-xenial main'
+add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-xenial main'
+icinga2 node wizard
