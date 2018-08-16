@@ -80,6 +80,8 @@ sudo systemctl restart icinga2
 sudo mkdir /etc/icinga2/zones.d/master/
 cp /etc/icinga2/conf.d/templates.conf /etc/icinga2/zones.d/master/
 cp /etc/icinga2/conf.d/commands.conf /etc/icinga2/zones.d/master/
+
+cd /etc/icinga2/zones.d/master
 touch /etc/icinga2/zones.d/master/services.conf
 echo "apply Service "load" {
   import "generic-service"
