@@ -123,7 +123,7 @@ sudo icinga2 daemon --validate
 sudo icingacli setup token create
 sudo vim /usr/share/icinga2/include/plugins-contrib.d/operating-system.conf
 sudo df -h
-
+netstat | grep :5665
 #sudo vi /etc/icinga2/features-available/ido-mysql.conf
 #user = "icinga"
 #password = "icinga"
