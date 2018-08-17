@@ -14,3 +14,8 @@ sudo ufw allow 5665
 sudo ufw allow apache2
 sudo systemctl restart icinga2
 netstat | grep :5665
+
+cd /usr/lib/nagios/plugins
+git clone https://github.com/justintime/nagios-plugins.git
+cp nagios-plugins/check_mem/check_mem.pl .
+rm -rf nagios-plugins/
