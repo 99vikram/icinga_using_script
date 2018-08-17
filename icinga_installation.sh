@@ -124,6 +124,12 @@ sudo icingacli setup token create
 sudo vim /usr/share/icinga2/include/plugins-contrib.d/operating-system.conf
 sudo df -h
 netstat | grep :5665
+
+cd /usr/lib/nagios/plugins
+git clone https://github.com/justintime/nagios-plugins.git
+cp nagios-plugins/check_mem/check_mem.pl .
+rm -rf nagios-plugins/
+
 #sudo vi /etc/icinga2/features-available/ido-mysql.conf
 #user = "icinga"
 #password = "icinga"
