@@ -118,6 +118,7 @@ apply Service "procs" {
 }" > /etc/icinga2/zones.d/master/services.conf
 
 sudo systemctl restart icinga2
+sudo ufw allow 5665
 sudo icinga2 daemon --validate
 sudo icingacli setup token create
 sudo vim /usr/share/icinga2/include/plugins-contrib.d/operating-system.conf
