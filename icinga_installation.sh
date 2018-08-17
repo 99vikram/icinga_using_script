@@ -89,7 +89,38 @@ echo "apply Service "load" {
   command_endpoint = host.vars.client_endpoint
   assign where host.vars.client_endpoint
 }
+apply Service "ping4" {
+  import "generic-service"
+  check_command = "ping4"
+  command_endpoint = host.vars.client_endpoint
+  assign where host.vars.client_endpoint
+}
+apply Service "disk" {
+  import "generic-service"
+  check_command = "disk"
+  command_endpoint = host.vars.client_endpoint
+  assign where host.vars.client_endpoint
+}
 
+apply Service "mem" {
+  import "generic-service"
+  check_command = "mem"
+  command_endpoint = host.vars.client_endpoint
+  assign where host.vars.client_endpoint
+}
+apply Service "disk" {
+  import "generic-service"
+  check_command = "disk"
+  command_endpoint = host.vars.client_endpoint
+  assign where host.vars.client_endpoint
+}
+
+apply Service "mem" {
+  import "generic-service"
+  check_command = "mem"
+  command_endpoint = host.vars.client_endpoint
+  assign where host.vars.client_endpoint
+}
 apply Service "procs" {
   import "generic-service"
   check_command = "procs"
@@ -98,6 +129,7 @@ apply Service "procs" {
 }" > /etc/icinga2/zones.d/master/services.conf
 
 sudo icinga2 daemon --validate
+sudo vim /usr/share/icinga2/include/plugins-contrib.d/operating-system.conf
 sudo icingacli setup token create
 
 #sudo vi /etc/icinga2/features-available/ido-mysql.conf
