@@ -56,7 +56,7 @@ sudo mysql -u root -p${pass} icinga < /usr/share/icinga2-ido-mysql/schema/mysql.
 sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;"
 mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
 sudo mysql -u root -p${pass} -e "CREATE DATABASE director CHARACTER SET 'utf8';GRANT ALL ON director.* TO director@localhost IDENTIFIED BY 'root';FLUSH PRIVILEGES;"
-mysql -u root -p${pass} director < /usr/share/director/etc/schema/mysql.schema.sql
+mysql -u director -p${pass} director < /usr/share/icingaweb2/modules/director/schema/mysql.sql
 
 sudo echo "date.timezone = Asia/Kolkata" >>  /etc/php/7.0/apache2/php.ini
 sudo systemctl restart apache2.service
