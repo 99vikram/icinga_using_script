@@ -1,10 +1,11 @@
 #!/bin/sh
 sudo apt-get update 
+sudo add-apt-repository ppa:ondrej/php
 sudo apt-get install apache2 -y
 sudo apt-get install php7.0 libapache2-mod-php7.0 php7.0-gd php7.0-intl php7.0-xml php7.0-ldap php7.0-mysql php7.0-pgsql php-imagick zip unzip icingaweb2 icingaweb2-module-monitoring icingaweb2-module-doc mariadb-client mariadb-server  -y
 sudo apt-get -f install -y
 wget -O - http://packages.icinga.org/icinga.key | sudo apt-key add -
-sudo add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-xenial main'
+sudo add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-bionic main'
 
 sudo apt-get update
 sudo apt-get install icinga2 nagios-plugins icinga2-ido-mysql -y
