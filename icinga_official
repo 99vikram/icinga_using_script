@@ -54,6 +54,7 @@ sudo mysql -u root -p${pass} -e "UPDATE mysql.user SET authentication_string=PAS
 sudo mysql -u root -p${pass} -e "CREATE DATABASE icinga;GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE VIEW, INDEX, EXECUTE ON icinga.* TO 'icinga'@'localhost' IDENTIFIED BY 'icinga';FLUSH PRIVILEGES;"
 sudo mysql -u root -p${pass} icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql
 sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;"
+sudo mysql -u root -p${pass} -e "CREATE DATABASE director CHARACTER SET 'utf8';GRANT ALL ON director.* TO director@localhost IDENTIFIED BY 'root';FLUSH PRIVILEGES;"
 mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
 
 sudo echo "date.timezone = Asia/Kolkata" >>  /etc/php/7.0/apache2/php.ini
@@ -65,3 +66,6 @@ sudo vi /etc/icinga2/features-available/ido-mysql.conf
 icingacli setup token create
 sudo systemctl restart icinga2.service
 sudo systemctl restart apache2.service
+cd /usr/share/icingaweb2/modules/
+git clone https://github.com/Icinga/icingaweb2-module-director.git director
+systemctl restart icinga2
