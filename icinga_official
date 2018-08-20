@@ -70,3 +70,5 @@ sudo systemctl restart apache2.service
 cd /usr/share/icingaweb2/modules/
 git clone https://github.com/Icinga/icingaweb2-module-director.git director
 systemctl restart icinga2
+
+icinga2 api setup
