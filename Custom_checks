@@ -1,0 +1,164 @@
+#########################
+vim check_myapache
+#########################
+#!/bin/bash
+service=apache2
+
+if (( $(ps -ef | grep -v grep | grep $service | wc -l) > 0 ))
+then
+echo "$service is running!!!"
+else
+echo "$service is not running!!!"
+fi
+##########################
+vim check_mynetinterface
+##########################
+#!/bin/sh
+
+/usr/lib/nagios/plugins/check_mynetspeed ens18
+###########################
+vim check_udpport
+###########################
+#!/bin/bash
+while getopts H:p: option
+do
+ case "${option}"
+ in
+H) addr=${OPTARG};;
+p) port=${OPTARG};;
+ esac
+done
+
+/bin/nc -vz -t "$addr" "$port" > /dev/null 2>&1
+
+stat=`echo $?`
+
+if test $stat -eq 0; then
+echo "Port $port is opened on $addr"
+exit 0
+else
+echo "Port $port is not opened on $addr"
+exit 2
+fi
+############################
+vim check_mynetspeed
+############################
+#!/bin/bash
+interface=$1
+received_bytes=""
+old_received_bytes=""
+transmitted_bytes=""
+old_transmitted_bytes=""
+get_bytes()
+{
+    line=$(cat /proc/net/dev | grep $interface | cut -d ':' -f 2 | awk '{print "received_bytes="$1, "transmitted_bytes="$9}')
+    eval $line
+}
+get_velocity()
+{
+    value=$1
+    old_value=$2
+
+    let vel=$value-$old_value
+    let velKB=$vel/1024
+    if [ $velKB != 0 ];
+    then
+ echo -n "$velKB KB/s";
+    else
+ echo -n "$vel B/s";
+    fi
+}
+get_bytes
+old_received_bytes=$received_bytes
+old_transmitted_bytes=$transmitted_bytes
+sleep 1;
+echo "";
+
+
+# Main loop. It will repeat forever.
+for i in {1..1};
+do
+    # Get new transmitted and received byte number values.
+    get_bytes
+
+    # Calculates speeds.
+    vel_recv=$(get_velocity $received_bytes $old_received_bytes)
+    vel_trans=$(get_velocity $transmitted_bytes $old_transmitted_bytes)
+
+    # Shows results in the console.
+    echo -en "$interface DOWN:$vel_recv\tUP:$vel_trans\r"
+
+    # Update old values to perform new calculations.
+    old_received_bytes=$received_bytes
+    old_transmitted_bytes=$transmitted_bytes
+
+    # Waits one second.
+    sleep 1;
+done
+data_recv=$(echo $vel_recv | awk '{print $2}')
+#data_trans=$(echo $vel_trans | awk '{print $2}')
+alert_recv=$(echo $vel_recv | awk '{print $1}')
+#alert_trans=$(echo $vel_trans | awk '{print $1}')
+if [[ $data_recv == "KB/s" ]] ; then
+if [[ $alert_recv -ge 5 ]] ; then
+echo "$alert_recv"
+exit 1
+fi
+fi
+##############################
+vim check_mymem
+##############################
+#! /bin/bash
+MEMORY=$(free -m | awk 'NR==2{printf "%.2f%%\t\t", $3*100/$2 }')
+echo "Current Memory Usage is : $MEMORY"
+
+data=${MEMORY%%.*}
+if ((0<=$data && $data<=39))
+then
+exit 0
+elif ((40<=$data && $data<=69))
+then
+exit 1
+else
+exit 2
+fi
+############################
+vim check_mycpu
+############################
+#! /bin/bash
+CPU=$(top -bn1 | grep load | awk '{printf "%.2f%%\t\t\n", $(NF-2)}')
+echo "Current CPU usage is  : $CPU"
+
+data=${CPU%%.*}
+if ((0<=$data && $data<=39))
+then
+exit 0
+elif ((40<=$data && $data<=69))
+then
+exit 1
+else
+exit 2
+fi
+############################
+vim check_mydisk
+############################
+#! /bin/bash
+DISK=$(df -h | awk '$NF=="/"{printf "%s\t\t", $5}')
+echo "Current Disk Usage is  : $DISK"
+
+data=$(echo $DISK |sed 's/%//')
+if ((0<=$data && $data<=39))
+then
+exit 0
+elif ((40<=$data && $data<=69))
+then
+exit 1
+else
+exit 2
+fi
+##############################
+vim check_myprocess
+##############################
+#! /bin/bash
+#ps aux | sort -nrk 3,3 | head -n 5 | awk '{ print $1 }'
+ps -eo pid,cmd,%mem,%cpu --sort=-%mem | head -n 6
