@@ -1,6 +1,7 @@
 #########################
-vim check_myapache
+#vim check_myapache
 #########################
+cat << EOF | sudo tee check_myapache
 #!/bin/bash
 service=apache2
 
@@ -10,15 +11,23 @@ echo "$service is running!!!"
 else
 echo "$service is not running!!!"
 fi
+EOF
+sudo chmod +x check_myapache
+
 ##########################
-vim check_mynetinterface
+#vim check_mynetinterface
 ##########################
+cat << EOF | sudo tee check_mynetinterface
 #!/bin/sh
 
-/usr/lib/nagios/plugins/check_mynetspeed ens18
+/usr/lib/nagios/plugins/check_mynetspeed eth0
+EOF
+sudo chmod +x check_mynetinterface
+
 ###########################
-vim check_udpport
+#vim check_udpport
 ###########################
+cat << EOF | sudo tee check_udpport
 #!/bin/bash
 while getopts H:p: option
 do
@@ -28,7 +37,6 @@ H) addr=${OPTARG};;
 p) port=${OPTARG};;
  esac
 done
-
 /bin/nc -vz -t "$addr" "$port" > /dev/null 2>&1
 
 stat=`echo $?`
@@ -40,9 +48,13 @@ else
 echo "Port $port is not opened on $addr"
 exit 2
 fi
+EOF
+sudo chmod +x check_udpport
+
 ############################
-vim check_mynetspeed
+#vim check_mynetspeed
 ############################
+cat << EOF | sudo tee check_mynetspeed
 #!/bin/bash
 interface=$1
 received_bytes=""
@@ -105,9 +117,13 @@ echo "$alert_recv"
 exit 1
 fi
 fi
+EOF
+sudo chmod +x check_mynetspeed
+
 ##############################
-vim check_mymem
+#vim check_mymem
 ##############################
+cat << EOF | sudo tee check_mymem
 #! /bin/bash
 MEMORY=$(free -m | awk 'NR==2{printf "%.2f%%\t\t", $3*100/$2 }')
 echo "Current Memory Usage is : $MEMORY"
@@ -122,9 +138,13 @@ exit 1
 else
 exit 2
 fi
+EOF
+sudo chmod +x check_mymem
+
 ############################
-vim check_mycpu
+#vim check_mycpu
 ############################
+cat << EOF | sudo tee check_mycpu
 #! /bin/bash
 CPU=$(top -bn1 | grep load | awk '{printf "%.2f%%\t\t\n", $(NF-2)}')
 echo "Current CPU usage is  : $CPU"
@@ -139,9 +159,13 @@ exit 1
 else
 exit 2
 fi
+EOF
+sudo chmod +x check_mycpu
+
 ############################
-vim check_mydisk
+#vim check_mydisk
 ############################
+cat << EOF | sudo tee check_mydisk
 #! /bin/bash
 DISK=$(df -h | awk '$NF=="/"{printf "%s\t\t", $5}')
 echo "Current Disk Usage is  : $DISK"
@@ -156,9 +180,15 @@ exit 1
 else
 exit 2
 fi
+EOF
+sudo chmod +x check_mydisk
+
 ##############################
-vim check_myprocess
+#vim check_myprocess
 ##############################
+cat << EOF | sudo tee check_myprocess
 #! /bin/bash
 #ps aux | sort -nrk 3,3 | head -n 5 | awk '{ print $1 }'
 ps -eo pid,cmd,%mem,%cpu --sort=-%mem | head -n 6
+EOF
+sudo chmod +x check_myprocess
