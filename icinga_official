@@ -78,3 +78,6 @@ icinga2 node wizard
 sudo chmod +x Custom_checks
 cd /usr/lib/nagios/plugins/
 ./Custom_checks
+
+sudo apt install mailutils
+sudo vim /etc/postfix/main.cf
