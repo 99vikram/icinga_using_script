@@ -8,7 +8,8 @@ sudo apt-get -f install -y
 sudo apt-get install icinga2-ido-mysql -y
 
 wget -O - http://packages.icinga.org/icinga.key | sudo apt-key add -
-sudo add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-bionic main'
+version=$(lsb_release -c | awk '{print $2}')
+sudo add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-$version main'
 
 sudo apt-get update
 sudo apt-get install icinga2 nagios-plugins icinga2-ido-mysql monitoring-plugins -y
@@ -63,7 +64,8 @@ sudo systemctl restart apache2.service
 
 sudo apt-get install icingaweb2 libapache2-mod-php icingacli php-fpm php-pgsql php-gd -y
 
-sudo vi /etc/icinga2/features-available/ido-mysql.conf
+sudo sed -i 's/icinga2/icinga/g' /etc/icinga2/features-available/ido-mysql.conf
+
 icingacli setup token create
 sudo systemctl restart icinga2.service
 sudo systemctl restart apache2.service
@@ -73,3 +75,6 @@ systemctl restart icinga2
 
 icinga2 api setup
 icinga2 node wizard
+sudo chmod +x Custom_checks
+cd /usr/lib/nagios/plugins/
+./Custom_checks
