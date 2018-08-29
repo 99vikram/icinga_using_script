@@ -19,8 +19,14 @@ sudo chmod +x check_myapache
 ##########################
 cat << EOF | sudo tee check_mynetinterface
 #!/bin/sh
-
-/usr/lib/nagios/plugins/check_mynetspeed eth0
+while getopts p: option
+do
+ case "${option}"
+ in
+p) port=${OPTARG};;
+ esac
+done
+/usr/lib/nagios/plugins/check_mynetspeed $port
 EOF
 sudo chmod +x check_mynetinterface
 
