@@ -86,4 +86,6 @@ sudo echo "admin@localhost.com nagios" >> /etc/postfix/virtual
 sudo postmap /etc/postfix/virtual
 sudo systemctl restart postfix
 
-icingacli setup token create
+sudo icingacli setup token create
+ip ="dig TXT +short o-o.myaddr.l.google.com @ns1.google.com"
+sudo xdg-open "http://$ip/icingaweb2/setup"
