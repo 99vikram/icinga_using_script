@@ -78,6 +78,12 @@ icinga2 api setup
 icinga2 node wizard
 
 sudo apt install mailutils
-sudo vim /etc/postfix/main.cf
+sudo xdg-open "https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-on-ubuntu-18-04"
+sudo dpkg-reconfigure postfix
+sudo postconf -e 'home_mailbox= Maildir/'
+sudo postconf -e 'virtual_alias_maps= hash:/etc/postfix/virtual'
+sudo echo "admin@localhost.com nagios" >> /etc/postfix/virtual
+sudo postmap /etc/postfix/virtual
+sudo systemctl restart postfix
 
 icingacli setup token create
