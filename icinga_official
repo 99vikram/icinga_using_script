@@ -66,18 +66,18 @@ sudo apt-get install icingaweb2 libapache2-mod-php icingacli php-fpm php-pgsql p
 
 sudo sed -i 's/icinga2/icinga/g' /etc/icinga2/features-available/ido-mysql.conf
 
-icingacli setup token create
 sudo systemctl restart icinga2.service
 sudo systemctl restart apache2.service
+
 cd /usr/share/icingaweb2/modules/
 git clone https://github.com/Icinga/icingaweb2-module-director.git director
+sudo icinga2 feature enable ido-mysql
 systemctl restart icinga2
 
 icinga2 api setup
 icinga2 node wizard
-sudo chmod +x Custom_checks
-cd /usr/lib/nagios/plugins/
-./Custom_checks
 
 sudo apt install mailutils
 sudo vim /etc/postfix/main.cf
+
+icingacli setup token create
