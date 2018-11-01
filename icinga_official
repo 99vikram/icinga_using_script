@@ -1,45 +1,54 @@
 #!/bin/sh
+echo "Updating the system !!!"
 sudo apt-get update 
+echo "Installing the Required Repositories !!!"
 sudo apt-get -y install apt-transport-https 
+echo "Installaing PHP !!!"
 sudo add-apt-repository ppa:ondrej/php
+echo "Installing Apache2 !!!"
 sudo apt-get install apache2 -y
+echo "Installing all dependencies and icinga pre-requisite modules.!!!"
 sudo apt-get install php7.0 libapache2-mod-php7.0 php7.0-gd php7.0-intl php7.0-xml php7.0-ldap php7.0-mysql php7.0-pgsql php-imagick php7.0-mbstring php7.0-curl zip unzip icingaweb2 icingaweb2-module-monitoring icingaweb2-module-doc mariadb-client mariadb-server  -y
 sudo apt-get -f install -y
+echo " Installing icinga2 IDO mysql "
 sudo apt-get install icinga2-ido-mysql -y
-
+echo "Adding icinga key and installing icinga.!!!"
 wget -O - http://packages.icinga.org/icinga.key | sudo apt-key add -
+echo "Taking OS version in version variable"
 version=$(lsb_release -c | awk '{print $2}')
 sudo add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-$version main'
-
+echo "Updating system and installing icinga monitoring modules.!!!"
 sudo apt-get update
 sudo apt-get install icinga2 nagios-plugins icinga2-ido-mysql monitoring-plugins -y
-
+echo "Installing vim addon manager for better readability of conf files.!!!"
 apt-get install vim-icinga2 vim-addon-manager
 vim-addon-manager -w install icinga2
-
+echo "Restarting all the services one by one.!!!"
+echo "Restarting and enabling apache"
 sudo systemctl start apache2.service
 sudo systemctl enable apache2.service
+echo "Restarting and enabling mysql"
 sudo systemctl start mysql.service
 sudo systemctl enable mysql.service
+echo "Restarting and enabling icinga2"
 sudo systemctl start icinga2.service
 sudo systemctl enable icinga2.service
-
+echo "Creating group icingacmd and adding id www-data to it.!!!"
 sudo groupadd icingacmd
 sudo usermod -a -G icingacmd www-data
 id www-data
-
+echo "Configuring Apache server and restarting service.!!!"
 sudo icingacli setup config webserver apache --document-root /usr/share/icingaweb2/public
 sudo systemctl restart apache2.service
-
+echo "Enabling IDO-MYSQL and restarting icinga"
 sudo icinga2 feature enable ido-mysql command 
 sudo systemctl restart icinga2.service
-
+echo "creating syslink and configuring firewall.!!!"
 sudo sed -i "s/Options Indexes FollowSymLinks/Options FollowSymLinks/" /etc/apache2/apache2.conf
-
 sudo ufw app list
 sudo ufw allow OpenSSH
 sudo ufw allow in "Apache Full"
-
+echo "MYSQL COnfiguration begins , set root as username and password. Press Enter 4 times. DONE. "
 sudo /usr/bin/mysql_secure_installation
 #root
 #Enter current password for root (enter for none): Enter
@@ -51,6 +60,7 @@ sudo /usr/bin/mysql_secure_installation
 #Remove test database and access to it? [Y/n]: Y
 #Reload privilege tables now? [Y/n]: Y
 pass="root"
+echo "Creating and configuring Databases named icinga,icingaweb2 and director.!!!"
 sudo mysql -u root -p${pass} -e "UPDATE mysql.user SET authentication_string=PASSWORD('root'), plugin='mysql_native_password' WHERE user='root';FLUSH PRIVILEGES;"
 sudo mysql -u root -p${pass} -e "CREATE DATABASE icinga;GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE VIEW, INDEX, EXECUTE ON icinga.* TO 'icinga'@'localhost' IDENTIFIED BY 'icinga';FLUSH PRIVILEGES;"
 sudo mysql -u root -p${pass} icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql
@@ -58,34 +68,40 @@ sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;"
 mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
 sudo mysql -u root -p${pass} -e "CREATE DATABASE director CHARACTER SET 'utf8';GRANT ALL ON director.* TO director@localhost IDENTIFIED BY 'root';FLUSH PRIVILEGES;"
 mysql -u director -p${pass} director < /usr/share/icingaweb2/modules/director/schema/mysql.sql
-
+echo "Setting time in php.ini file.!!!"
 sudo echo "date.timezone = Europe/London" >>  /etc/php/7.0/apache2/php.ini
 sudo systemctl restart apache2.service
-
+echo "Installing icingaweb2!!!"
 sudo apt-get install icingaweb2 libapache2-mod-php icingacli php-fpm php-pgsql php-gd -y
-
+echo "Add icinga2 in place of icinga"
 sudo sed -i 's/icinga2/icinga/g' /etc/icinga2/features-available/ido-mysql.conf
-
+echo "Restarting icinga nd apache2"
 sudo systemctl restart icinga2.service
 sudo systemctl restart apache2.service
-
+echo "Copying Director Module and restarting icinga.!!!"
 cd /usr/share/icingaweb2/modules/
 git clone https://github.com/Icinga/icingaweb2-module-director.git director
-sudo icinga2 feature enable ido-mysql
 systemctl restart icinga2
-
+cd ~
+echo "Setting api and node wizard"
+echo "Set existing node as master in node wizard process and provide necessary inputs.!!!"
 icinga2 api setup
 icinga2 node wizard
-
+echo "Installing and configuring POSTFIX as mail sender.!!"
 sudo apt install mailutils
 sudo xdg-open "https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-on-ubuntu-18-04"
+echo "Follow links for POSTFIX configuration.!!!"
 sudo dpkg-reconfigure postfix
 sudo postconf -e 'home_mailbox= Maildir/'
 sudo postconf -e 'virtual_alias_maps= hash:/etc/postfix/virtual'
 sudo echo "admin@localhost.com nagios" >> /etc/postfix/virtual
 sudo postmap /etc/postfix/virtual
 sudo systemctl restart postfix
-
+echo "Generating TOKEN for icingaweb2.!!!"
 sudo icingacli setup token create
 ip ="dig TXT +short o-o.myaddr.l.google.com @ns1.google.com"
 sudo xdg-open "http://$ip/icingaweb2/setup"
+echo "Add password as icinga in ido-mysql.conf file!!!"
+vi /etc/icinga2/features-available/ido-mysql.conf
+echo "Add login usernamde as admin and Password and admin@123!!!"
+echo "Happy icinga configuration!!!"
