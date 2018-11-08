@@ -48,7 +48,7 @@ sudo mysql -u root -p${pass} -e "UPDATE mysql.user SET authentication_string=PAS
 sudo mysql -u root -p${pass} -e "CREATE DATABASE icinga;GRANT SELECT, INSERT, UPDATE, DELETE, DROP, CREATE VIEW, INDEX, EXECUTE ON icinga.* TO 'icinga'@'localhost' IDENTIFIED BY 'icinga';FLUSH PRIVILEGES;"
 sudo mysql -u root -p${pass} icinga < /usr/share/icinga2-ido-mysql/schema/mysql.sql
 sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;"
-mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
+sudo mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
 
 sudo echo "date.timezone = Asia/Kolkata" >>  /etc/php/7.0/apache2/php.ini
 sudo systemctl restart apache2.service
