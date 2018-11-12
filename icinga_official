@@ -1,4 +1,6 @@
 #!/bin/sh
+echo "Below script is created by taking help from below URL: "
+echo "#######https://www.vultr.com/docs/how-to-install-icinga-2-and-icinga-web-2-on-ubuntu-16-04#######"
 echo "Updating the system !!!"
 sudo apt-get update 
 echo "Installing the Required Repositories !!!"
@@ -8,8 +10,20 @@ sudo add-apt-repository ppa:ondrej/php
 echo "Installing Apache2 !!!"
 sudo apt-get install apache2 -y
 echo "Installing all dependencies and icinga pre-requisite modules.!!!"
-sudo apt-get install php7.0 libapache2-mod-php7.0 php7.0-gd php7.0-intl php7.0-xml php7.0-ldap php7.0-mysql php7.0-pgsql php-imagick php7.0-mbstring php7.0-curl zip unzip icingaweb2 icingaweb2-module-monitoring icingaweb2-module-doc mariadb-client mariadb-server  -y
+sudo apt-get install  php7.0-fpm php7.0-dev php7.0-zip php7.0-curl php7.0-xmlrpc php7.0-gd php7.0-mysql php7.0-mbstring php7.0-xml libapache2-mod-php7.0 -y && apt-get install php7.0 php7.0-gettext php7.0-xdebug -y
+sudo apt-get install php7.0 libapache2-mod-php7.0 php7.0-gd php7.0-intl php7.0-xml php7.0-ldap php7.0-mysql php7.0-pgsql php-imagick php7.0-mbstring php7.0-curl zip unzip icingaweb2 icingaweb2-module-monitoring icingaweb2-module-doc icingacli mariadb-client mariadb-server  -y
+sudo a2enmod proxy_fcgi setenvif
+sudo a2enconf php7.0-fpm
 sudo apt-get -f install -y
+echo "Installing composer for managing php dependencies!!!"
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+echo "Move composer to /usr/local/bin!!!"
+sudo mv ~/composer.phar /usr/local/bin/composer
+echo "Install the ZendFramework Db component using Composer:!!!"
+sudo composer require zendframework/zend-db
 echo " Installing icinga2 IDO mysql "
 sudo apt-get install icinga2-ido-mysql -y
 echo "Adding icinga key and installing icinga.!!!"
@@ -69,10 +83,10 @@ mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.sche
 sudo mysql -u root -p${pass} -e "CREATE DATABASE director CHARACTER SET 'utf8';GRANT ALL ON director.* TO director@localhost IDENTIFIED BY 'root';FLUSH PRIVILEGES;"
 mysql -u director -p${pass} director < /usr/share/icingaweb2/modules/director/schema/mysql.sql
 echo "Setting time in php.ini file.!!!"
-sudo echo "date.timezone = Europe/London" >>  /etc/php/7.0/apache2/php.ini
+sudo echo "date.timezone = America/Los_Angeles" >>  /etc/php/7.0/apache2/php.ini
 sudo systemctl restart apache2.service
 echo "Installing icingaweb2!!!"
-sudo apt-get install icingaweb2 libapache2-mod-php icingacli php-fpm php-pgsql php-gd -y
+sudo apt-get install icingaweb2 libapache2-mod-php icingacli php7.0-fpm php7.0-pgsql php7.0-gd -y
 echo "Add icinga2 in place of icinga"
 sudo sed -i 's/icinga2/icinga/g' /etc/icinga2/features-available/ido-mysql.conf
 echo "Restarting icinga nd apache2"
