@@ -1,68 +1,71 @@
 #!/bin/sh
-echo "Below script is created by taking help from below URL: "
+bold=$(tput bold)
+normal=$(tput sgr0)
+echo "#>>>>>>>>>> SCRIPT STARTS <<<<<<<<<<<<<<<<"
+echo "#Below script is created by taking help from below URL: "
 echo "#######https://www.vultr.com/docs/how-to-install-icinga-2-and-icinga-web-2-on-ubuntu-16-04#######"
-echo "Updating the system !!!"
+echo "@@@@@===>>>>>${bold}    Updating the system !!!${normal}"
 sudo apt-get update 
-echo "Installing the Required Repositories !!!"
+echo "@@@@@===>>>>>${bold}    Installing the Required Repositories !!!${normal}"
 sudo apt-get -y install apt-transport-https 
-echo "Installaing PHP !!!"
+echo "@@@@@===>>>>>${bold}Installaing PHP !!!${normal}"
 sudo add-apt-repository ppa:ondrej/php
-echo "Installing Apache2 !!!"
+echo "@@@@@===>>>>>${bold}Installing Apache2 !!!${normal}"
 sudo apt-get install apache2 -y
-echo "Installing all dependencies and icinga pre-requisite modules.!!!"
+echo "@@@@@===>>>>>${bold}Installing all dependencies and icinga pre-requisite modules.!!!${normal}"
 sudo apt-get install  php7.0-fpm php7.0-dev php7.0-zip php7.0-curl php7.0-xmlrpc php7.0-gd php7.0-mysql php7.0-mbstring php7.0-xml libapache2-mod-php7.0 -y && apt-get install php7.0 php7.0-gettext php7.0-xdebug -y
 sudo apt-get install php7.0 libapache2-mod-php7.0 php7.0-gd php7.0-intl php7.0-xml php7.0-ldap php7.0-mysql php7.0-pgsql php-imagick php7.0-mbstring php7.0-curl zip unzip icingaweb2 icingaweb2-module-monitoring icingaweb2-module-doc icingacli mariadb-client mariadb-server  -y
 sudo a2enmod proxy_fcgi setenvif
 sudo a2enconf php7.0-fpm
 sudo apt-get -f install -y
-echo "Installing composer for managing php dependencies!!!"
+echo "@@@@@===>>>>>${bold}Installing composer for managing php dependencies!!!${normal}"
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 php composer-setup.php
 php -r "unlink('composer-setup.php');"
-echo "Move composer to /usr/local/bin!!!"
+echo "@@@@@===>>>>>${bold}Move composer to /usr/local/bin!!!${normal}"
 sudo mv ~/composer.phar /usr/local/bin/composer
-echo "Install the ZendFramework Db component using Composer:!!!"
+echo "@@@@@===>>>>>${bold}Install the ZendFramework Db component using Composer:!!!${normal}"
 sudo composer require zendframework/zend-db
-echo " Installing icinga2 IDO mysql "
+echo "@@@@@===>>>>>${bold} Installing icinga2 IDO mysql ${normal}"
 sudo apt-get install icinga2-ido-mysql -y
-echo "Adding icinga key and installing icinga.!!!"
+echo "@@@@@===>>>>>${bold}Adding icinga key and installing icinga.!!!${normal}"
 wget -O - http://packages.icinga.org/icinga.key | sudo apt-key add -
-echo "Taking OS version in version variable"
+echo "@@@@@===>>>>>${bold}Taking OS version in version variable${normal}"
 version=$(lsb_release -c | awk '{print $2}')
 sudo add-apt-repository 'deb http://packages.icinga.org/ubuntu icinga-$version main'
-echo "Updating system and installing icinga monitoring modules.!!!"
+echo "@@@@@===>>>>>${bold}Updating system and installing icinga monitoring modules.!!!${normal}"
 sudo apt-get update
 sudo apt-get install icinga2 nagios-plugins icinga2-ido-mysql monitoring-plugins -y
-echo "Installing vim addon manager for better readability of conf files.!!!"
+echo "@@@@@===>>>>>${bold}Installing vim addon manager for better readability of conf files.!!!${normal}"
 apt-get install vim-icinga2 vim-addon-manager
 vim-addon-manager -w install icinga2
-echo "Restarting all the services one by one.!!!"
-echo "Restarting and enabling apache"
+echo "@@@@@===>>>>>${bold}Restarting all the services one by one.!!!${normal}"
+echo "@@@@@===>>>>>${bold}Restarting and enabling apache${normal}"
 sudo systemctl start apache2.service
 sudo systemctl enable apache2.service
-echo "Restarting and enabling mysql"
+echo "@@@@@===>>>>>${bold}Restarting and enabling mysql${normal}"
 sudo systemctl start mysql.service
 sudo systemctl enable mysql.service
-echo "Restarting and enabling icinga2"
+echo "@@@@@===>>>>>${bold}Restarting and enabling icinga2${normal}"
 sudo systemctl start icinga2.service
 sudo systemctl enable icinga2.service
-echo "Creating group icingacmd and adding id www-data to it.!!!"
+echo "@@@@@===>>>>>${bold}Creating group icingacmd and adding id www-data to it.!!!${normal}"
 sudo groupadd icingacmd
 sudo usermod -a -G icingacmd www-data
 id www-data
-echo "Configuring Apache server and restarting service.!!!"
+echo "@@@@@===>>>>>${bold}Configuring Apache server and restarting service.!!!${normal}"
 sudo icingacli setup config webserver apache --document-root /usr/share/icingaweb2/public
 sudo systemctl restart apache2.service
-echo "Enabling IDO-MYSQL and restarting icinga"
+echo "@@@@@===>>>>>${bold}Enabling IDO-MYSQL and restarting icinga${normal}"
 sudo icinga2 feature enable ido-mysql command 
 sudo systemctl restart icinga2.service
-echo "creating syslink and configuring firewall.!!!"
+echo "@@@@@===>>>>>${bold}creating syslink and configuring firewall.!!!${normal}"
 sudo sed -i "s/Options Indexes FollowSymLinks/Options FollowSymLinks/" /etc/apache2/apache2.conf
 sudo ufw app list
 sudo ufw allow OpenSSH
 sudo ufw allow in "Apache Full"
-echo "MYSQL COnfiguration begins , set root as username and password. Press Enter 4 times. DONE. "
+echo "@@@@@===>>>>>${bold}MYSQL COnfiguration begins , set root as username and password. Press Enter 4 times. DONE.${normal} "
 sudo /usr/bin/mysql_secure_installation
 #root
 #Enter current password for root (enter for none): Enter
@@ -82,43 +85,43 @@ sudo mysql -u root -p${pass} -e "CREATE DATABASE icingaweb2;"
 mysql -u root -p${pass} icingaweb2 < /usr/share/icingaweb2/etc/schema/mysql.schema.sql
 sudo mysql -u root -p${pass} -e "CREATE DATABASE director CHARACTER SET 'utf8';GRANT ALL ON director.* TO director@localhost IDENTIFIED BY 'root';FLUSH PRIVILEGES;"
 mysql -u director -p${pass} director < /usr/share/icingaweb2/modules/director/schema/mysql.sql
-echo "Setting time in php.ini file.!!!"
+echo "@@@@@===>>>>>${bold}Setting time in php.ini file.!!!${normal}"
 sudo echo "date.timezone = America/Los_Angeles" >>  /etc/php/7.0/apache2/php.ini
 sudo systemctl restart apache2.service
-echo "Installing icingaweb2!!!"
+echo "@@@@@===>>>>>${bold}Installing icingaweb2!!!${normal}"
 sudo apt-get install icingaweb2 libapache2-mod-php icingacli php7.0-fpm php7.0-pgsql php7.0-gd -y
-echo "Add icinga2 in place of icinga"
+echo "@@@@@===>>>>>${bold}Add icinga2 in place of icinga${normal}"
 sudo sed -i 's/icinga2/icinga/g' /etc/icinga2/features-available/ido-mysql.conf
-echo "Restarting icinga nd apache2"
+echo "@@@@@===>>>>>${bold}Restarting icinga nd apache2${normal}"
 sudo systemctl restart icinga2.service
 sudo systemctl restart apache2.service
-echo "Copying Director Module and restarting icinga.!!!"
+echo "@@@@@===>>>>>${bold}Copying Director Module and restarting icinga.!!!${normal}"
 cd /usr/share/icingaweb2/modules/
 git clone https://github.com/Icinga/icingaweb2-module-director.git director
 systemctl restart icinga2
 cd ~
-echo "Setting api and node wizard"
-echo "Set existing node as master in node wizard process and provide necessary inputs.!!!"
+echo "@@@@@===>>>>>${bold}Setting api and node wizard${normal}"
+echo "@@@@@===>>>>>${bold}Set existing node as master in node wizard process and provide necessary inputs.!!!${normal}"
 icinga2 api setup
 icinga2 node wizard
-echo "Installing and configuring POSTFIX as mail sender.!!"
+echo "@@@@@===>>>>>${bold}Installing and configuring POSTFIX as mail sender.!!${normal}"
 sudo apt install mailutils
 sudo xdg-open "https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-on-ubuntu-18-04"
-echo "Follow links for POSTFIX configuration.!!!"
+echo "@@@@@===>>>>>${bold}Follow links for POSTFIX configuration.!!!${normal}"
 sudo dpkg-reconfigure postfix
 sudo postconf -e 'home_mailbox= Maildir/'
 sudo postconf -e 'virtual_alias_maps= hash:/etc/postfix/virtual'
 sudo echo "admin@localhost.com nagios" >> /etc/postfix/virtual
 sudo postmap /etc/postfix/virtual
 sudo systemctl restart postfix
-echo "Generating TOKEN for icingaweb2.!!!"
+echo "@@@@@===>>>>>${bold}Generating TOKEN for icingaweb2.!!!${normal}"
 sudo icingacli setup token create
 ip ="dig TXT +short o-o.myaddr.l.google.com @ns1.google.com"
 sudo xdg-open "http://$ip/icingaweb2/setup"
-echo "Add password as icinga in ido-mysql.conf file!!!"
+echo "@@@@@===>>>>>${bold}Add password as icinga in ido-mysql.conf file!!!${normal}"
 vi /etc/icinga2/features-available/ido-mysql.conf
-echo "Add login usernamde as admin and Password and admin@123!!!"
-echo "Happy icinga configuration!!!"
+echo "@@@@@===>>>>>${bold}Add login usernamde as admin and Password and admin@123!!!${normal}"
+echo "@@@@@===>>>>>${bold}Happy icinga configuration!!!${normal}"
 echo "########### NOW FOLLOW BELOW STEPS ##################"
 echo "Initiate the Icinga 2 installation wizard in the web interface & Point your web browser to the following URL: http://<your-serve-ip>/icingaweb2/setup"
 echo "# On the Welcome page, input the setup token you generated earlier, and then click the Next button."
@@ -126,37 +129,37 @@ echo "# On the Modules page, select one or more modules you want to enable (at l
 echo "# On the Requirements page, make sure that every required item is satisfied, and then click the Next button."
 echo "# On the Authentication page, you need to choose the authentication method when accessing Icinga Web 2. Here, you can choose Database, and then click the Next button."
 echo "# On the Database Resource page, fill out all required fields as below, and then click the Next button."
-echo "Resource Name*: icingaweb_db"
-echo "Database Type*: MySQL"
-echo "Host*: localhost"
-echo "Database Name*: icingaweb2"
-echo "Username*: root"
+echo "${bold}Resource Name*: icingaweb_db${normal}"
+echo "${bold}Database Type*: MySQL${normal}"
+echo "${bold}Host*: localhost${normal}"
+echo "${bold}Database Name*: icingaweb2${normal}"
+echo "${bold}Username*: root${normal}"
 echo "#Password*: <MariaDB-root-password>"
 echo "# On the Authentication Backend page, using the default backend name icingaweb2, click the Next button to move on."
 echo "# On the Administration page, setup the first Icinga Web 2 administrative account (say it is icingaweb2admin) and password (say it is icingaweb2pass), and then click the Next button."
 echo "# On the Application Configuration page, you can adjust application- and logging-related configuration options to fit your needs. For now, you can use the default values listed below and click the Next button to proceed."
-echo "Show Stacktraces: Checked"
-echo "User Preference Storage Type*: Database"
-echo "Logging Type*: Syslog"
-echo "Logging Level*: Error"
-echo "Application Prefix*: icingaweb2"
+echo "${bold}Show Stacktraces: Checked${normal}"
+echo "${bold}User Preference Storage Type*: Database${normal}"
+echo "${bold}Logging Type*: Syslog${normal}"
+echo "${bold}Logging Level*: Error${normal}"
+echo "${bold}Application Prefix*: icingaweb2${normal}"
 echo "# On the Review page, double check your configuration, and then click the Next button."
 echo "# On the Monitoring Module Configuration Welcome page, click the Next button."
 echo "# On the Monitoring Backend page, use the default backend name icinga and backend type IDO, and then click the Next button."
 echo "# On the Monitoring IDO Resource page, input IDO database details you setup earlier, and then click the Next button."
-echo "Resource Name*: icinga_ido"
-echo "Database Type*: MySQL"
-echo "Host*: localhost"
-echo "Database Name*: icinga"
-echo "Username*: icinga"
-echo "Password*: icinga"
-echo "enable_ha = false"
+echo "${bold}Resource Name*: icinga_ido${normal}"
+echo "${bold}Database Type*: MySQL${normal}"
+echo "${bold}Host*: localhost${normal}"
+echo "${bold}Database Name*: icinga${normal}"
+echo "${bold}Username*: icinga${normal}"
+echo "${bold}Password*: icinga${normal}"
+echo "${bold}enable_ha = false${normal}"
 echo "# On the Command Transport page, still use these default values listed below. Click the Next button to move on."
-echo "Transport Name*: icinga2"
-echo "Transport Type*: Local Command File"
-echo "Command File*: /var/run/icinga2/cmd/icinga2.cmd"
+echo "${bold}Transport Name*: icinga2${normal}"
+echo "${bold}Transport Type*: Local Command File${normal}"
+echo "${bold}Command File*: /var/run/icinga2/cmd/icinga2.cmd${normal}"
 echo "# On the Monitoring Security page, still use the default value:"
-echo "Protected Custom Variables: *pw*,*pass*,community"
+echo "${bold}Protected Custom Variables: *pw*,*pass*,community${normal}"
 echo "#Click the Next button to go to next page."
 echo "# On the review page, double check your configuration, and then click the Finish button."
 echo "# On the Congratulations! page, click the Login to Icinga Web 2 button to jump to the Icinga Web 2 login page. Use the Icinga Web 2 administrative account and password you setup earlier to log in. Explore the Icinga Web 2 dashboard."
