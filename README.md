@@ -5,3 +5,8 @@ sudo bash \n
 ./icinga_iinstallation.sh \n
 for icinga2 ido select NO when prompted \n
 set MYSQL password as root \n
+- **icinga**
+
+```
+steps configuration
+```
