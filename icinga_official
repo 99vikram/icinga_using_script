@@ -105,7 +105,7 @@ echo "@@@@@===>>>>>${bold}Set existing node as master in node wizard process and
 icinga2 api setup
 icinga2 node wizard
 echo "@@@@@===>>>>>${bold}Installing and configuring POSTFIX as mail sender.!!${normal}"
-sudo apt install mailutils
+sudo apt install mailutils -y
 sudo xdg-open "https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-on-ubuntu-18-04"
 echo "@@@@@===>>>>>${bold}Follow links for POSTFIX configuration.!!!${normal}"
 sudo dpkg-reconfigure postfix
