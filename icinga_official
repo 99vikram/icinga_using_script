@@ -24,7 +24,7 @@ php -r "if (hash_file('sha384', 'composer-setup.php') === '93b54496392c062774670
 php composer-setup.php
 php -r "unlink('composer-setup.php');"
 echo "@@@@@===>>>>>${bold}  Move composer to /usr/local/bin!!!${normal}"
-sudo mv ~/composer.phar /usr/local/bin/composer
+sudo mv composer.phar /usr/local/bin/composer
 echo "@@@@@===>>>>>${bold}  Install the ZendFramework Db component using Composer:!!!${normal}"
 sudo composer require zendframework/zend-db
 echo "@@@@@===>>>>>${bold}  Installing icinga2 IDO mysql ${normal}"
